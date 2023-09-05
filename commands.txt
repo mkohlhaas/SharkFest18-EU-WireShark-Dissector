@@ -1,0 +1,3 @@
+.\WSGD\Wireshark.exe -r .\sf18.pcapng
+.\lua\Wireshark.exe -X lua_script:sf18.lua -r .\sf18.pcapng
+.\C-Based\Wireshark.exe -r .\sf18.pcapng

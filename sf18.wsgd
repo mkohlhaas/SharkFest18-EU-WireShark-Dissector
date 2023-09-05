@@ -1,0 +1,29 @@
+# Example for SF18
+
+# Protocol identification
+PROTONAME               SharkFest 18 Protocol (WSGD)
+PROTOSHORTNAME          SF18
+PROTOABBREV             sf18
+
+# Protocol parent, controls when dissector is called
+PARENT_SUBFIELD         tcp.port
+PARENT_SUBFIELD_VALUES  54321
+
+# Message header, protocol starts with a header
+MSG_HEADER_TYPE         T_msg_header
+
+# Message type identifier, must be part of header
+MSG_ID_FIELD_NAME       Function
+
+# Message title field, shown in Info column
+MSG_TITLE               InfoString
+
+# Message size field, from field in header
+MSG_TOTAL_LENGTH        Length
+
+# Message body type:
+MSG_MAIN_TYPE           T_msg_switch(Function)
+
+# Field definitions
+PROTO_TYPE_DEFINITIONS
+include  sf18.fdesc;

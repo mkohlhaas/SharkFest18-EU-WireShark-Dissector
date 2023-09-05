@@ -1,0 +1,97 @@
+# SF18 protocol field descriptions
+
+
+# Message type enumeration
+enum8 T_Type_message
+{
+  connect               20    # must be an integer
+  connect_ack            -    # "-" indicates previous value + 1
+  request_data          40
+  request_reply          -
+  disconnect            60
+  disconnect_ack         -  
+}
+
+# Header definition
+struct T_msg_header
+{
+  byte_order            big_endian;
+
+  T_Type_message        Function;
+  uint16                Length;
+  hide var string       InfoString = print ("%s", Function);  # Note type conversion
+
+  byte_order            little_endian;
+}
+
+# Messages
+struct  T_msg_connect
+{
+  T_msg_header          Header;
+  uint32                ID;
+}
+
+struct  T_msg_connect_ack
+{
+  T_msg_header          Header;
+  uint32                ID;
+}
+
+struct  T_msg_disconnect
+{
+  T_msg_header          Header;
+  uint32                ID;
+}
+
+struct  T_msg_disconnect_ack
+{
+  T_msg_header          Header;
+  uint32                ID;
+}
+
+# Data value enumeration
+enum8 T_Type_dataid
+{
+  read_short  0
+  read_long   1
+  read_string 2
+}
+
+struct T_msg_request_data
+{
+  T_msg_header          Header;
+  T_Type_dataid         Data_ID;
+}
+
+struct T_msg_request_reply
+{
+  T_msg_header          Header;
+  T_Type_dataid         Data_ID;
+  
+  switch(Data_ID)
+  {
+    case T_Type_dataid::read_short  : uint16 Data_Short;
+    case T_Type_dataid::read_long   : uint32 Data_Long;
+    case T_Type_dataid::read_string : string(15) Data_String;
+  }
+}
+
+struct  T_msg_unknown
+{
+  T_msg_header          Header;
+  raw(*)                end_of_msg;
+}
+
+# Main switch
+switch  T_msg_switch    T_Type_message
+{
+  case  T_Type_message::connect        : T_msg_connect         "";  # "" avoids a useless supplementary tree
+  case  T_Type_message::connect_ack    : T_msg_connect_ack     "";
+  case  T_Type_message::request_data   : T_msg_request_data    "";
+  case  T_Type_message::request_reply  : T_msg_request_reply   "";
+  case  T_Type_message::disconnect     : T_msg_disconnect      "";
+  case  T_Type_message::disconnect_ack : T_msg_disconnect_ack  "";
+  
+  default : T_msg_unknown "";
+}
+
